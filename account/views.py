@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView, status
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer, UserCreateSerializer
 from .models import RefreshDBModel, User
 from rest_framework_simplejwt.state import token_backend
@@ -50,3 +50,20 @@ class LogOutView(APIView):
         except:
             return Response({"message: blacklist add fail"}, status=status.HTTP_400_BAD_REQUEST)
 
+class CustomTokenRefreshView(APIView):
+    def post(self, request):
+        # request의 헤더에서 토큰을 가져와서 메일만 추출
+        access_token = request.headers['Authorization'].replace('Bearer ', '')
+        access_token = AccessToken(access_token)
+        email = access_token.payload.get('email')
+
+        if RefreshDBModel.objects.filter(email = email).exists():
+            # refresh token을 이용해 access token만 재발급
+            refresh_obj = RefreshDBModel.objects.get(email=email)            
+            print('refresh_data is exists')
+            print('refresh_data: ', str(refresh_obj.refresh))           
+            refresh = RefreshToken(refresh_obj.refresh)
+            data = {'access': str(refresh.access_token)}
+            return Response(data)
+        else:
+            return Response({"message : Invalid refresh token"})

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from .models import RefreshDBModel, User
 
 User = get_user_model()
@@ -50,7 +50,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             data = {'access': str(refresh.access_token)}
             return data
         else:
-            # 엑세스 토큰만 발급
+            # 전부 다 발급
             print('create new token')
             data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
             refresh_obj = RefreshDBModel.objects.create(email=email, refresh=data.get('refresh'))
@@ -73,4 +73,3 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     #         # 엑세스 토큰만 발급
     #         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
     #         return data
-
