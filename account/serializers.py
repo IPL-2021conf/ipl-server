@@ -41,7 +41,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             email = request.POST['email']
             password = request.POST['password']
             user = User.objects.get(email=email)
-            print(user.password)
         except KeyError:
             pass
         
