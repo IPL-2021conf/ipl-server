@@ -1,3 +1,5 @@
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.hashers import check_password
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
@@ -37,18 +39,25 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         try:
             request = self.context['request']
             email = request.POST['email']
+            password = request.POST['password']
+            user = User.objects.get(email=email)
+            print(user.password)
         except KeyError:
             pass
         
         # 로그인 시 DB에 refresh token이 남아있는지 확인
         if RefreshDBModel.objects.filter(email = email).exists():
-            # refresh token을 이용해 access token만 재발급
-            refresh_obj = RefreshDBModel.objects.get(email=email)            
-            print('refresh_data is exists')
-            print('refresh_data: ', str(refresh_obj.refresh))           
-            refresh = RefreshToken(refresh_obj.refresh)
-            data = {'access': str(refresh.access_token)}
-            return data
+            if AbstractBaseUser.check_password(user, password):
+                print("Password: checked")
+                # refresh token을 이용해 access token만 재발급
+                refresh_obj = RefreshDBModel.objects.get(email=email)            
+                print('refresh_data is exists')
+                print('refresh_data: ', str(refresh_obj.refresh))           
+                refresh = RefreshToken(refresh_obj.refresh)
+                data = {'access': str(refresh.access_token)}
+                return data
+            else:
+                return {"error: password is not matched"}
         else:
             # 전부 다 발급
             print('create new token')
