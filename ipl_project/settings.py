@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # installed app
     'data_app',
     'account',
+    'img_proc',
 ]
 
 REST_FRAMEWORK = {

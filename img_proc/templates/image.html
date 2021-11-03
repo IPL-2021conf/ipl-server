@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>img proc page</h1>
+        <h1>{{email}}</h1>
+        <h1>{{name}}</h1>
+        <h1>{{desc}}</h1>
+        {% for img_link in img_links%}
+            <img src={{img_link}} alt="{{img_link}}" onclick = alert('asd')>
+        {% endfor %}
+        <button onclick=alert('aasdf')>hello</button>
+    </body>
+</html>
