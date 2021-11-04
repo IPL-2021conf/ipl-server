@@ -49,27 +49,10 @@ def face_extract(request):
                 image_obj = ImgFaceModel.objects.create(image=image)    #얼굴 저장
                 img_links.append('https://bucket-for-ipl.s3.amazonaws.com/'+str(image_obj.image))
             print(img_links)
-            # ==================================================
-
-            # ================모자이크 이미지 출력=========================          
-            # image_obj = ImgProcModel.objects.create(image=image)
-            # img_url = 'https://bucket-for-ipl.s3.amazonaws.com/'+str(image_obj.image)
-            # img_array = dnnface.image_sending(img_url)#ndarray
-            # print('image_obj:     ',image_obj)
-            # img = Image.fromarray(img_array)  #PIL.Image.Image
-            # # img.show()
-            # img_io = io.BytesIO()
-            # img.save(img_io, format='JPEG')
-            # print('save finish')            
-            # image.file = img_io
-            # image_obj = ImgProcModel.objects.create(image=image)
-            # img_links.append('https://bucket-for-ipl.s3.amazonaws.com/'+str(image_obj.image))
-            # print(img_links)
-            # ==============================================
-            
+            # ==================================================           
         return response.JsonResponse({'img_links': img_links})
     else:
-        return render(request, 'image.html')
+        return response.JsonResponse({'message': 'fail get face image'})
 
 # 메서드
 # 원본 이미지, 몇번째 인물 찍었는지 list, 게시글에 올릴 정보들(username, date, )
@@ -83,14 +66,11 @@ def img_processing(request):
         email = 'dummy@eamil.com'#post_data['useremail']
         token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjM2MjIxMDQ3LCJpYXQiOjE2MzU3NDkwNTIsImp0aSI6ImY3MmI3MGZmMGQ5YzQxYWI5ZGQ2OTY5NDM1NDlkM2I5IiwidXNlcl9pZCI6MSwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20ifQ.CEYmJwTyqyShgNFMqCKMiyT3QHB-hbDqHHsF20La6cM'#request.META['HTTP_AUTHORIZATION']
 
-        img_url = 'https://bucket-for-ipl.s3.amazonaws.com/imgproc/ipltest.jpg'#post_data['img_url']
+        img_url = 'https://bucket-for-ipl.s3.amazonaws.com/imgproc/test4.jpg'#post_data['img_url']
         img_str = pathlib.Path(img_url)
         
-        human_list = [0,1]#post_data['human_list']
-        
-        img_array = dnnface.image_sending(img_url, human_list)
-
-        
+        human_list = [0,1]#post_data['human_list']        
+        img_array = dnnface.image_sending(img_url, human_list)        
         img_io = io.BytesIO()
         img_array.save(img_io, format='PNG')
         img_io.seek(0)
