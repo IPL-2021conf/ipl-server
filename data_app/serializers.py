@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import VideoModel, VideoPostModel
 from .models import ImagePostModel, ImageModel
+
 class ImageSerializer(serializers.ModelSerializer):
     image = serializers.FileField(use_url=True)
     class Meta:
@@ -22,8 +23,7 @@ class ImagePostSerializer(serializers.ModelSerializer):
             links.append('https://bucket-for-ipl.s3.amazonaws.com/'+str(image_obj.image))
         post.link = ','.join(str(link) for link in links)
         post.save()
-        print("link: ", post.link)
-        
+        print("link: ", post.link)        
         return post
     class Meta:
         model = ImagePostModel
