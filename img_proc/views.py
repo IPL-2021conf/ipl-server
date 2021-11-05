@@ -113,8 +113,11 @@ def face_extrac_video(request): #영상에서 사람얼굴 탐지, 얼굴 이미
 def vdo_processing(request):    #영상 모자이크 처리, 완성 영상 주소 반환
     if request.method == 'POST':
         vdo_url = 'https://bucket-for-ipl.s3.amazonaws.com/videoproc/ipl_video_test.mp4'#request.POST['vdo_url']
-        human_list = [0]#request.POST['human_list']
-        vdo_url = dnnface.video_sending(vdo_url, human_list)
+        get_list = [0]#request.POST['human_list']
+        # human_list = []
+        # for human in eval(get_list):
+        #     human_list.append(human)
+        vdo_url = dnnface.video_sending(vdo_url, get_list) #human_list
 
         return HttpResponse(vdo_url)
     return response.JsonResponse({'message': 'video upload fail'})
