@@ -57,8 +57,7 @@ def img_processing(request): # 이미지 모자이크 처리, 완성 이미지 �
         
         get_list = request.POST['human_list']
         human_list = []
-        print('human type:  ', str(type(human_list)))
-        for human in get_list:
+        for human in eval(get_list):
             human_list.append(int(human))
         m_img_array = dnnface.image_sending(img_url, human_list)
         
