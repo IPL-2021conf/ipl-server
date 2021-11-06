@@ -1,19 +1,17 @@
-import io
-import os
+import io, os, pathlib
 from django.core.files.base import File
-from django.http import response
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+from django.http import response, HttpResponse
 from .models import ImgFaceModel, ImgProcModel, VdoFaceModel, VdoProcModel
-from .face import dnnface
 from PIL import Image
-import requests, pathlib
-from django.core.files.uploadedfile import InMemoryUploadedFile
-
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .face import dnnface
 # Create your views here.
 
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((JWTAuthentication,))
 def face_extract_img(request):  #이미지에서 얼굴 추출
     if request.method == 'POST':
         img_links = []
@@ -39,8 +37,6 @@ def face_extract_img(request):  #이미지에서 얼굴 추출
                 face.save(face_io, format='JPEG')   #이미지를 face_io에 저장하고 format은 크게 상관없음
                 print('save finish')
                 face_image = File(face_io, image_name + 'f-' + str(face_counter)+image_ext)
-                # image.file = face_io    #InMemoryUploadedFile을 새로 만들기 어려워 기존에 있던것의 이미지만 바꿔 사용                
-                # image.name = image_name + 'f-' + str(face_counter)+image_ext    #위와 같이 기존의 변경된 파일에 얼굴마다 count를 붙여 이름저장
                 face_counter += 1
                 face_obj = ImgFaceModel.objects.create(image=face_image)    #얼굴 저장
                 img_links.append('https://bucket-for-ipl.s3.amazonaws.com/'+str(face_obj.image))
@@ -49,7 +45,9 @@ def face_extract_img(request):  #이미지에서 얼굴 추출
     return response.JsonResponse({'message': 'fail get face image'})
 
 
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((JWTAuthentication,))
 def img_processing(request): # 이미지 모자이크 처리, 완성 이미지 주소 반환
     if request.method == 'POST':
         img_url = request.POST['img_url']
@@ -63,7 +61,6 @@ def img_processing(request): # 이미지 모자이크 처리, 완성 이미지 �
         
         img_io = io.BytesIO()
         m_img_array.save(img_io, format='PNG')
-
         
         image = File(img_io, img_str.name.split('.')[0] + img_str.suffix)
         image_obj = ImgProcModel.objects.create(image=image)
@@ -77,7 +74,9 @@ def img_processing(request): # 이미지 모자이크 처리, 완성 이미지 �
 
 people_list = []
 
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((JWTAuthentication,))
 def face_extrac_video(request): #영상에서 사람얼굴 탐지, 얼굴 이미지 반환
     vdo_links = []
     face_counter = 0
@@ -110,14 +109,16 @@ def face_extrac_video(request): #영상에서 사람얼굴 탐지, 얼굴 이미
         return response.JsonResponse({'vdo_links': vdo_links})  #[0]:video link, [1~]face-image links
     return response.JsonResponse({'message': 'fail get face image'})
     
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((JWTAuthentication,))
 def vdo_processing(request):    #영상 모자이크 처리, 완성 영상 주소 반환
     if request.method == 'POST':
-        vdo_url = 'https://bucket-for-ipl.s3.amazonaws.com/videoproc/test4.mp4'#request.POST['vdo_url']
-        get_list = [0,1]#request.POST['human_list']
-        # human_list = []
-        # for human in eval(get_list):
-        #     human_list.append(human)
+        vdo_url = request.POST['vdo_url']
+        get_list = request.POST['human_list']
+        human_list = []
+        for human in eval(get_list):
+            human_list.append(human)
         
         vdo_url = dnnface.video_sending(vdo_url, get_list, people_list) #human_list
 

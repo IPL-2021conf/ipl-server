@@ -6,7 +6,6 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer, UserCreateSerializer
 from .models import RefreshDBModel, User
-from rest_framework_simplejwt.state import token_backend
 
 # Create your views here.
 class SignUpView(APIView):
