@@ -75,6 +75,7 @@ def img_processing(request): # 이미지 모자이크 처리, 완성 이미지 �
     
 
 
+people_list = []
 
 @csrf_exempt
 def face_extrac_video(request): #영상에서 사람얼굴 탐지, 얼굴 이미지 반환
@@ -90,12 +91,12 @@ def face_extrac_video(request): #영상에서 사람얼굴 탐지, 얼굴 이미
             video_name = video_info_list[0] #aaa
             vdo_url = 'https://bucket-for-ipl.s3.amazonaws.com/'+str(video_obj.video)   #원본url저장
             vdo_links.append(vdo_url)
-
-            face_array_list = dnnface.video_sending(vdo_url)
-            print(face_array_list)
-            print(type(face_array_list))
-
-            for face_array in face_array_list:                
+            global people_list
+            face_array_list, people_list = dnnface.video_sending(vdo_url)
+            
+            # print(face_array_list)
+            print(type(face_array_list))            
+            for face_array in face_array_list:
                 face = Image.fromarray(face_array)  #PIL로  array를 이미지로 변환 type=PIL.Image.Image
                 # face.show()
                 face_io = io.BytesIO()  #메모리 저장을 위한(?) BytesIO
@@ -112,12 +113,14 @@ def face_extrac_video(request): #영상에서 사람얼굴 탐지, 얼굴 이미
 @csrf_exempt
 def vdo_processing(request):    #영상 모자이크 처리, 완성 영상 주소 반환
     if request.method == 'POST':
-        vdo_url = 'https://bucket-for-ipl.s3.amazonaws.com/videoproc/ipl_video_test.mp4'#request.POST['vdo_url']
-        get_list = [0]#request.POST['human_list']
+        vdo_url = 'https://bucket-for-ipl.s3.amazonaws.com/videoproc/test4.mp4'#request.POST['vdo_url']
+        get_list = [0,1]#request.POST['human_list']
         # human_list = []
         # for human in eval(get_list):
         #     human_list.append(human)
-        vdo_url = dnnface.video_sending(vdo_url, get_list) #human_list
+        
+        vdo_url = dnnface.video_sending(vdo_url, get_list, people_list) #human_list
 
+        people_list.clear()
         return HttpResponse(vdo_url)
     return response.JsonResponse({'message': 'video upload fail'})

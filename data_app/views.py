@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from rest_framework import viewsets 
 from .models import VideoModel
-from .serializers import VideoSerializer
+from .serializers import VideoPostSerilizer, VideoSerializer
 from rest_framework.filters import SearchFilter
 from rest_framework_simplejwt.tokens import AccessToken
 # Create your views here.
 
 class VideoViewSet(viewsets.ModelViewSet):
     queryset = VideoModel.objects.all()
-    serializer_class = VideoSerializer
+    serializer_class = VideoPostSerilizer
     
     filter_backends = [SearchFilter]
     search_fields = ('')
