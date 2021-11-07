@@ -38,7 +38,7 @@ def image_sending(img_url, human_list=None):
 
     for i in range(detect.shape[0]):
         confidence = detect[i, 2]
-        if confidence < 0.5:
+        if confidence < 0.4:
             continue
 
         x1 = int(detect[i, 3] * w)
@@ -111,7 +111,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                 ok = 1  # 새로운 좌표를 집어 넣을까 말까 확인 변수(default: 참)
 
                 confidence = detect[i, 2]
-                if confidence < 0.3:
+                if confidence < 0.4:
                     break
 
                 x1 = int(detect[i, 3] * w)
