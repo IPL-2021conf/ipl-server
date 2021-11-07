@@ -72,11 +72,10 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
     config = 'img_proc/face/opencv_face_detector.pbtxt'    
 
     cap = cv2.VideoCapture(video_url)
-    cap = cv2.cvtColor(cap, cv2.COLOR_BGR2RGB)
     if not cap.isOpened():
         print('Camera open failed!')
         exit()
-
+        
     net = cv2.dnn.readNet(model, config)
 
     if net.empty():
@@ -102,7 +101,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
             _, frame = cap.read()
             if frame is None:
                 break
-
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             blob = cv2.dnn.blobFromImage(frame, 1, (300, 300), (104, 177, 123))
             net.setInput(blob)
             detect = net.forward()
