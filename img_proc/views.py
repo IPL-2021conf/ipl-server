@@ -120,7 +120,7 @@ def vdo_processing(request):    #영상 모자이크 처리, 완성 영상 주�
         for human in eval(get_list):
             human_list.append(human)
         
-        vdo_url = dnnface.video_sending(vdo_url, get_list, people_list) #human_list
+        vdo_url = dnnface.video_sending(vdo_url, human_list, people_list) #human_list
 
         people_list.clear()
         return HttpResponse(vdo_url)
