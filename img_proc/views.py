@@ -75,8 +75,6 @@ def img_processing(request): # 이미지 모자이크 처리, 완성 이미지 �
 people_list = []
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
-@authentication_classes((JWTAuthentication,))
 def face_extrac_video(request): #영상에서 사람얼굴 탐지, 얼굴 이미지 반환
     vdo_links = []
     face_counter = 0
@@ -110,8 +108,6 @@ def face_extrac_video(request): #영상에서 사람얼굴 탐지, 얼굴 이미
     return response.JsonResponse({'message': 'fail get face image'})
     
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
-@authentication_classes((JWTAuthentication,))
 def vdo_processing(request):    #영상 모자이크 처리, 완성 영상 주소 반환
     if request.method == 'POST':
         vdo_url = request.POST['vdo_url']

@@ -136,6 +136,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                     mPeople_list.append([x1,y1,x2,y2,f])
                     frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
                     face_list.append(frame[y1:y2, x1:x2].copy()) # 새로운 사람이 추가 됐으므로 새로운 사람의 첫 프레임의 이미지를 face_list에 추가
+                    print('added')
 
             f+=1
                 
