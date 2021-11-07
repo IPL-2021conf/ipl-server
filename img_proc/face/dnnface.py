@@ -134,6 +134,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                 if ok == 1:  # 만약 ok가 참이면 새로운 사람이 등장한 것이기 때문에 해당 좌표를 리스트에 집어 넣음
                     people.append([x1, y1, x2, y2, f]) # 새로운 사람을 리스트에 추가
                     mPeople_list.append([x1,y1,x2,y2,f])
+                    frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
                     face_list.append(frame[y1:y2, x1:x2].copy()) # 새로운 사람이 추가 됐으므로 새로운 사람의 첫 프레임의 이미지를 face_list에 추가
 
             f+=1
@@ -146,6 +147,12 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
 
         people_mosaic = [] # 얘를 사용해서 모자이크를 실행
         c=[]
+
+        people_mosaic_del = [] # 사람이 사라지면 모자이크가 삭제되게 하는데 이용되는 리스트
+        remove = [] # 삭제할 위치를 담고 있는 리스트
+        people_mosaic_del = people_mosaic #왜인지는 모르지만 필요함(이래야 오류가 안뜸)
+
+        old_time = time.time() # 시간 측정 시작
 
         while True:
             _, frame = cap.read()
@@ -171,6 +178,18 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                 y1 = int(detect[i, 4] * h)
                 x2 = int(detect[i, 5] * w)
                 y2 = int(detect[i, 6] * h)
+
+                if time.time() - old_time>0.5:    # 이 부분은 사라진 사람의 모자이크를 삭제하는 부분입니다..
+                    for i in range(len(people_mosaic)):
+                        if people_mosaic[i] == people_mosaic_del[i]:
+                            remove.append(people_mosaic[i])
+
+                    for i in range(len(remove)):
+                        people_mosaic.remove(remove[i])
+
+                    old_time = time.time()
+                    people_mosaic_del = people_mosaic
+                    remove = []
 
                 for idx in range(len(people_mosaic)):  # 왼쪽 위 좌표와 오른쪽 아래 좌표를 확인하기 위해 루프를 반복
                     if people_mosaic[idx] == [0,0,0,0,0]:
