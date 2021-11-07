@@ -51,8 +51,6 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated', # 인증된 사용자만 접근 가능
-         # 'rest_framework.permissions.IsAdminUser', # 관리자만 접근 가능
-
     ),
 
     'DEFAULT_RENDERER_CLASSES': (
@@ -63,21 +61,9 @@ REST_FRAMEWORK = {
 
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
-
-# ## JWT
-# # 추가적인 JWT_AUTH 설젇
-# import datetime
-# JWT_AUTH = {
-#     'JWT_SECRET_KEY': SECRET_KEY,
-#     'JWT_ALGORITHM': 'HS256', # 암호화 알고리즘
-#     'JWT_ALLOW_REFRESH': True, # refresh 사용 여부
-#     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7), # 유효기간 설정
-#     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=28), # JWT 토큰 갱신 유효기간
-# }
 
 # simple jwt 설정
 from datetime import timedelta
