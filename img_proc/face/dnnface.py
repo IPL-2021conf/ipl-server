@@ -128,7 +128,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                         people[idx][2] = x2
                         people[idx][3] = y2
 
-
                         ok = 0  # ok 값 거짓으로 설정
                         break  # 갱신 후 루프를 종료
                 
@@ -137,7 +136,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                     mPeople_list.append([x1,y1,x2,y2,f])
                     face_list.append(frame[y1:y2, x1:x2].copy()) # 새로운 사람이 추가 됐으므로 새로운 사람의 첫 프레임의 이미지를 face_list에 추가
 
-                f+=1
+            f+=1
                 
 
         return face_list, mPeople_list#반환
@@ -173,7 +172,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                 x2 = int(detect[i, 5] * w)
                 y2 = int(detect[i, 6] * h)
 
-
                 for idx in range(len(people_mosaic)):  # 왼쪽 위 좌표와 오른쪽 아래 좌표를 확인하기 위해 루프를 반복
                     if people_mosaic[idx] == [0,0,0,0,0]:
                         continue
@@ -208,7 +206,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                         face_img = cv2.resize(face_img, (people_mosaic[i][2] - people_mosaic[i][0], people_mosaic[i][3] - people_mosaic[i][1]), interpolation=cv2.INTER_AREA)  # 확대
                         frame[people_mosaic[i][1]:people_mosaic[i][3],
                         people_mosaic[i][0]:people_mosaic[i][2]] = face_img  # 탐지된 얼굴 영역 모자이크 처리
-                f += 1
+            f += 1
 
 
             out.write(frame)
