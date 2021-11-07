@@ -25,7 +25,8 @@ def image_sending(img_url, human_list=None):
     url_response = opener.open(img_url)   
     img_array = np.array(bytearray(url_response.read()), dtype=np.uint8) 
     image = cv2.imdecode(img_array, -1)
-    
+    # frame = cv2.imread(img)
+    # frame = cv2.flip(img_array,1)
     frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     blob = cv2.dnn.blobFromImage(frame, 1, (300, 300), (104, 177, 123))
@@ -84,11 +85,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
 
     people = []  # 탐지된 객체중 사람의 위치를 저장
     mPeople_list = []
-    check = [0]*100 # 이미지를 바꿨다면?? 을 확인하는 리스트
-    check_real = [0]*100 # 체크리스트만 갖고 체크를 하면 type err가 발생하기 떄문에 여기에 2초 후의 이미지를 저장함
     face_list = [] # 최종적으로 서버로 보낼 얼굴 리스트
-
-    old_time = time.time()  # 시간 측정 시작 (old_time = 기준 시간)
 
     fourcc = cv2.VideoWriter_fourcc(*'DIVX') # 영상 촬영
     out = cv2.VideoWriter('./img_proc/face/output.avi', fourcc, 30.0, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
@@ -131,6 +128,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                         people[idx][2] = x2
                         people[idx][3] = y2
 
+
                         ok = 0  # ok 값 거짓으로 설정
                         break  # 갱신 후 루프를 종료
                 
@@ -148,11 +146,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
         f = 1
 
         people_mosaic = [] # 얘를 사용해서 모자이크를 실행
-        people_mosaic_del = [] # 사라진 사람의 위치를 삭제하기 위한 비교용 리스트
-        
-        people_mosaic_del = people_mosaic
-
-        old_time = time.time()  # 시간 측정 시작 (old_time = 기준 시간)
         c=[]
 
         while True:
@@ -179,6 +172,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                 y1 = int(detect[i, 4] * h)
                 x2 = int(detect[i, 5] * w)
                 y2 = int(detect[i, 6] * h)
+
 
                 for idx in range(len(people_mosaic)):  # 왼쪽 위 좌표와 오른쪽 아래 좌표를 확인하기 위해 루프를 반복
                     if people_mosaic[idx] == [0,0,0,0,0]:
