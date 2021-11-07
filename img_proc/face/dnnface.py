@@ -72,6 +72,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
     config = 'img_proc/face/opencv_face_detector.pbtxt'    
 
     cap = cv2.VideoCapture(video_url)
+    cap = cv2.cvtColor(cap, cv2.COLOR_BGR2RGB)
     if not cap.isOpened():
         print('Camera open failed!')
         exit()

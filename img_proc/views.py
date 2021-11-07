@@ -116,6 +116,7 @@ def vdo_processing(request):    #영상 모자이크 처리, 완성 영상 주�
     if request.method == 'POST':
         vdo_url = request.POST['vdo_url']
         get_list = request.POST['human_list']
+        print(get_list)
         human_list = []
         for human in eval(get_list):
             human_list.append(human)
