@@ -10,7 +10,6 @@ from img_proc.models import VdoProcModel
 from django.core.files.base import File
 
 def image_sending(img_url, human_list=None):
-    # print(img_url)    
     model = 'img_proc/face/opencv_face_detector_uint8.pb'
     config = 'img_proc/face/opencv_face_detector.pbtxt'
 
@@ -26,8 +25,7 @@ def image_sending(img_url, human_list=None):
     url_response = opener.open(img_url)   
     img_array = np.array(bytearray(url_response.read()), dtype=np.uint8) 
     image = cv2.imdecode(img_array, -1)
-    # frame = cv2.imread(img)
-    # frame = cv2.flip(img_array,1)
+    
     frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     blob = cv2.dnn.blobFromImage(frame, 1, (300, 300), (104, 177, 123))
@@ -69,9 +67,6 @@ def image_sending(img_url, human_list=None):
         return Image.fromarray(frame)
 
 
-
-
-
 def video_sending(video_url, human_list = None, people_list=None): # 동영상 처리
     model = 'img_proc/face/opencv_face_detector_uint8.pb'
     config = 'img_proc/face/opencv_face_detector.pbtxt'    
@@ -94,7 +89,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
     face_list = [] # 최종적으로 서버로 보낼 얼굴 리스트
 
     old_time = time.time()  # 시간 측정 시작 (old_time = 기준 시간)
-
 
     fourcc = cv2.VideoWriter_fourcc(*'DIVX') # 영상 촬영
     out = cv2.VideoWriter('./img_proc/face/output.avi', fourcc, 30.0, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
@@ -137,12 +131,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                         people[idx][2] = x2
                         people[idx][3] = y2
 
-                        # if time.time() - old_time > 2.0:  # 기준 시간과 현재 시간이 2초 이상 차이난다면
-                        #     if not check[idx]:  # 2초 후 만약 해당 이미지가 갱신이 된 이미지가 아니라면 -> 최초의 사진으로 부터 2초 후에 갱신이 되지 않았다면
-                        #         check_real[idx] = frame[y1:y2, x1:x2].copy() # 갱신 된 이미지를 check_rea 리스트에 저장 함
-                        #         check[idx] = 1  # check 리스트의 해당 인덱스를 1로 바꿔 갱신이 된 이미지(깔끔한 이미지)임을 알림
-                        #     old_time = time.time()  # 기준 시간을 갱신
-
                         ok = 0  # ok 값 거짓으로 설정
                         break  # 갱신 후 루프를 종료
                 
@@ -153,10 +141,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
 
                 f+=1
                 
-
-        # for i in range(len(people)):  # face_list에는 첫 프레임의 사람 얼굴만 있으므로 갱신된 얼굴이 있다면 갱신된 얼굴로 변경
-        #     if type(check_real[i]) != int:       # 만약 check_real 값이 0이 아니라면 -> 갱신이 되었다면
-        #         face_list[i] = check_real[i]    # 해당 이미지를 갱신된 이미지로 변경 함
 
         return face_list, mPeople_list#반환
     
@@ -196,16 +180,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                 x2 = int(detect[i, 5] * w)
                 y2 = int(detect[i, 6] * h)
 
-                # if time.time()-old_time > 3:            # 기준 시간과 현재 시간이 4초 이상 차이난다면
-                #     for i in range(len(people_mosaic)):        # 사람의 위치가 저장된 리스트의 길이만큼 반복
-                #         if people_mosaic[i] == people_mosaic_del[i]:  # 만약 4초 전에 갱신한 비교 리스트와 똑같은 위치가 있다면
-                #             people_mosaic[i] = [0,0,0,0,0]    # 해당 위치를 삭제용 리스트 remove에 저장함
-
-                #     old_time = time.time()              # 기준 시간을 갱신
-                #     people_mosaic_del = people_mosaic   # 사람의 위치가 저장된 리스트를 다시 비교용 리스트에 복사함
-                #     remove = []                         # remove 리스트를 초기화 (4초 후 다시 비교하기 위해서)
-
-
                 for idx in range(len(people_mosaic)):  # 왼쪽 위 좌표와 오른쪽 아래 좌표를 확인하기 위해 루프를 반복
                     if people_mosaic[idx] == [0,0,0,0,0]:
                         continue
@@ -244,10 +218,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
 
 
             out.write(frame)
-
-        # for i in range(len(people)):  # face_list에는 첫 프레임의 사람 얼굴만 있으므로 갱신된 얼굴이 있다면 갱신된 얼굴로 변경
-        #     if check_real != 0:       # 만약 check_real 값이 0이 아니라면 -> 갱신이 되었다면
-        #         face_list[i] = check_real[i]    # 해당 이미지를 갱신된 이미지로 변경 함
 
         out.release()
 

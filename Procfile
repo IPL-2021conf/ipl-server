@@ -1,1 +1,1 @@
-web: gunicorn ipl_project.wsgi --timeout 40 --log-file -
+web: gunicorn ipl_project.wsgi --log-file -
