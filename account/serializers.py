@@ -52,7 +52,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 print('refresh_data is exists')
                 print('refresh_data: ', str(refresh_obj.refresh))           
                 refresh = RefreshToken(refresh_obj.refresh)
-                data = {'access': str(refresh.access_token)}
+                data = {'access': str(refresh.access_token), 'username': user.username}
                 return data
             else:
                 return {"error: password is not matched"}
@@ -60,23 +60,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             # 전부 다 발급
             print('create new token')
             data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
+            data['username'] = user.username
             refresh_obj = RefreshDBModel.objects.create(email=email, refresh=data.get('refresh'))
             print(refresh_obj.refresh)
             return data
-
-    # def validate(self, attrs):
-    #     try:
-    #         request = self.context['request']
-    #     except KeyError:
-    #         pass
-
-    #     print(attrs)
-    #     try:
-    #         refresh = RefreshToken(request.POST['refresh'])
-    #         data = {'access': str(refresh.access_token)}
-    #         return data            
-            
-    #     except:
-    #         # 엑세스 토큰만 발급
-    #         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
-    #         return data
