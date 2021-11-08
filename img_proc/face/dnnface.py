@@ -88,7 +88,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
     face_list = [] # 최종적으로 서버로 보낼 얼굴 리스트
 
     fourcc = cv2.VideoWriter_fourcc(*'DIVX') # 영상 촬영
-    out = cv2.VideoWriter('./img_proc/face/output.avi', fourcc, 30.0, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+    out = cv2.VideoWriter('./img_proc/face/output.mp4', fourcc, 30.0, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
     # output.avi = 모자이크 처리 된 영상
 
     f = 1
@@ -233,7 +233,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
 
         vdo_str = pathlib.Path(video_url)
         vdo_name = vdo_str.name.split('.')[0]
-        video = File(open('./img_proc/face/output.avi','rb'), vdo_name+'asdf'+'.avi')
+        video = File(open('./img_proc/face/output.mp4','rb'), vdo_name+'msc'+'.mp4')
         video_obj = VdoProcModel.objects.create(video = video)
         print('https://bucket-for-ipl.s3.amazonaws.com/'+str(video_obj.video))
         return 'https://bucket-for-ipl.s3.amazonaws.com/'+str(video_obj.video)
