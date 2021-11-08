@@ -5,6 +5,7 @@ import numpy as np
 import urllib.request
 import time
 import math
+import copy
 
 from img_proc.models import VdoProcModel
 from django.core.files.base import File
@@ -66,7 +67,6 @@ def image_sending(img_url, human_list=None):
                 face_img = cv2.resize(face_img, (human[i][2]-human[i][0], human[i][3]-human[i][1]), interpolation=cv2.INTER_AREA)  # 확대
                 frame[human[i][1]:human[i][3], human[i][0]:human[i][2]] = face_img  # 탐지된 얼굴 영역 모자이크 처리
         return Image.fromarray(frame)
-
 
 def video_sending(video_url, human_list = None, people_list=None): # 동영상 처리
     model = 'img_proc/face/opencv_face_detector_uint8.pb'
@@ -138,9 +138,8 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                     face_list.append(frame[y1:y2, x1:x2].copy()) # 새로운 사람이 추가 됐으므로 새로운 사람의 첫 프레임의 이미지를 face_list에 추가
                     print('added')
 
-            f+=1
-                
-
+            f+=1  
+  
         return face_list, mPeople_list#반환
     
     else:
@@ -151,7 +150,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
 
         people_mosaic_del = [] # 사람이 사라지면 모자이크가 삭제되게 하는데 이용되는 리스트
         remove = [] # 삭제할 위치를 담고 있는 리스트
-        people_mosaic_del = people_mosaic #왜인지는 모르지만 필요함(이래야 오류가 안뜸)
 
         old_time = time.time() # 시간 측정 시작
 
@@ -183,20 +181,22 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                 if time.time() - old_time>0.5:    # 이 부분은 사라진 사람의 모자이크를 삭제하는 부분입니다..
                     for i in range(len(people_mosaic)):
                         if people_mosaic[i] == people_mosaic_del[i]:
-                            remove.append(people_mosaic[i])
+                            remove.append(people_mosaic[i].copy())
 
                     for i in range(len(remove)):
                         people_mosaic.remove(remove[i])
 
                     old_time = time.time()
-                    people_mosaic_del = people_mosaic
-                    remove = []
+                    people_mosaic_del.clear()
+                    for i in range(len(people_mosaic)):
+                        people_mosaic_del.append(people_mosaic[i].copy())
+                    remove.clear()
 
                 for idx in range(len(people_mosaic)):  # 왼쪽 위 좌표와 오른쪽 아래 좌표를 확인하기 위해 루프를 반복
                     if people_mosaic[idx] == [0,0,0,0,0]:
                         continue
                     if math.sqrt((people_mosaic[idx][0] - x1) ** 2 + (people_mosaic[idx][1] - y1) ** 2) < 110 or \
-                        math.sqrt((people_mosaic[idx][2] - x2) ** 2 + (people_mosaic[idx][3] - y2) ** 2) < 110:  # 만약 리스트 안에 가까운 좌표가 이미 있다면
+                        math.sqrt((people_mosaic[idx][2] - x2) ** 2 + (people_mosaic[idx][3] - y2) ** 2) < 110 :  # 만약 리스트 안에 가까운 좌표가 이미 있다면
                         people_mosaic[idx][0] = x1   # 해당 좌표 값을 갱신
                         people_mosaic[idx][1] = y1
                         people_mosaic[idx][2] = x2
@@ -206,9 +206,8 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
 
                 if ok == 1:  # 만약 ok가 참이면 새로운 사람이 등장한 것이기 때문에 해당 좌표를 리스트에 집어 넣음
                     people_mosaic.append([x1, y1, x2, y2, f]) # 새로운 사람을 리스트에 추가
-                
-                print(people_list)
-                print(people_mosaic)
+                    people_mosaic_del.append([x1,y1,x2,y2,f]) # 인덱스 에러 방지를 위해 여기에도 추가
+
                 
                 for i in range(len(people_mosaic)):
                     if i in human_list and people_mosaic[i] != [0,0,0,0,0]:
@@ -216,8 +215,7 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
                             # print("i: " + str(i))
                             c.append(i)
                             c = list(dict.fromkeys(c))
-                            
-                # print("c: "+ str(c))
+                print(c)     
                 for i in range(len(people_mosaic)):
                     if i in c and people_mosaic[i] != [0,0,0,0,0]:
                         rate = int((people_mosaic[i][2] - people_mosaic[i][0] + people_mosaic[i][3] - people_mosaic[i][1]) / 25)
