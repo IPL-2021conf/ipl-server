@@ -1,4 +1,5 @@
-from rest_framework import viewsets 
+from rest_framework import viewsets
+from rest_framework.decorators import api_view 
 from .models import VideoPostModel
 from .serializers import VideoPostSerilizer
 from rest_framework.filters import SearchFilter

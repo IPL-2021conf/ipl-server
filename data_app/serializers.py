@@ -9,7 +9,6 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class ImagePostSerializer(serializers.ModelSerializer):    
     images = ImageSerializer(many=True, read_only=True)
-
     def create(self, validated_data):
         links = []
         images_data = self.context['request'].FILES
