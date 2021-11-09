@@ -228,7 +228,6 @@ def video_sending(video_url, human_list = None, people_list=None): # 동영상 �
 
 
             out.write(frame)
-
         out.release()
 
         vdo_str = pathlib.Path(video_url)
